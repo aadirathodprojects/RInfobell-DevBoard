@@ -1,0 +1,235 @@
+# 📋 Project Requirement Document (PRD)
+
+## 📇 Project Name: Infobell DevBoard
+
+### 🔹 One-liner:
+
+A private internal platform for developers at Infobell IT to post coding doubts, share useful tools/tips, and collaborate securely using their @infobellit.com email.
+
+---
+
+## 🌟 Goal
+
+* Improve internal collaboration and learning.
+* Provide a structured platform for solving technical doubts.
+* Share daily tips, tools, or shortcuts relevant to developers.
+
+---
+
+## ⚡ Tech Stack (All Free Tier)
+
+| Layer       | Tech                                   |
+| ----------- | -------------------------------------- |
+| Frontend    | ReactJS + Vite + Tailwind              |
+| GraphQL API | gqlgen (Go GraphQL server)             |
+| Backend     | Go + gRPC                              |
+| Database    | PostgreSQL (Railway/Supabase)          |
+| File Upload | Supabase Storage / Local Docker        |
+| Auth        | Google OAuth (Restricted) via Firebase |
+| Hosting FE  | Vercel                                 |
+| Hosting BE  | Railway / Fly.io                       |
+| CI/CD       | GitHub Actions                         |
+| Container   | Docker + docker-compose                |
+
+---
+
+## 📅 Features
+
+### 1. Authentication
+
+* Google OAuth with @infobellit.com restriction.
+* User profile stored in DB after first login.
+
+### 2. Post a Doubt
+
+* Title
+* Description (Markdown)
+* Category: Backend, Frontend, DevOps
+* Screenshot Upload (PNG/JPG via Supabase)
+
+### 3. View Doubts
+
+* Feed view with filters (category, resolved/unresolved)
+* Search bar (title, tags)
+* View single post with:
+
+  * Description
+  * Screenshot
+  * Comments
+  * Resolution status
+
+### 4. Comments
+
+* Any logged-in user can comment
+* Markdown + Code Snippets
+* Votes: 👍 / ✅
+* Resolve toggle (by post creator)
+
+### 5. Common Tips Section
+
+* Daily/weekly shared tips (Markdown)
+* Like/Pin feature
+* Public feed of tips shared by developers
+
+### 6. Profile Page (Optional)
+
+* View user’s own questions, comments, and tips
+
+### 7. Admin (Optional Future)
+
+* Moderate comments/posts
+* Pin community-wide tips
+
+---
+
+## 🏛 Wireframes (Text Representation)
+
+### Login Page
+
+* Google Sign-In
+* Only allow emails ending with @infobellit.com
+
+### Home Page (Feed)
+
+```
+[ Search Bar ] [ Filter: Category | Status ]
+--------------------------------------------
+| [Backend] Docker issue not resolved       |
+| [Frontend] React dropdown not rendering   |
+| [DevOps] CI failing for unknown reason    |
+--------------------------------------------
+[ + Post Doubt ] [ Tips Section ]
+```
+
+### Post Doubt
+
+```
+Title: [_______________________]
+Description: [Markdown Editor]
+Category: [Dropdown]
+Upload Screenshot: [Choose File]
+[ Submit ]
+```
+
+### View Post
+
+```
+Title: Docker image error on deploy
+Category: Backend | Posted by: Aditya | Resolved: ❌
+[Image Preview]
+[Markdown description with code]
+
+--- Comments ---
+User1: Try changing base image ✅
+User2: Also check docker-compose
+[ Add Comment Box ]
+```
+
+### Tips Page
+
+```
+--- Community Tips ---
+- Use GPT4 for code review! [👍 5]
+- Test API latency using hoppscotch.io [👍 8]
+[ Add New Tip (Markdown) ]
+```
+
+---
+
+## 📄 API & Service Breakdown
+
+### Services (gRPC)
+
+* AuthService: Google OAuth
+* PostService: Create, fetch, update doubts
+* CommentService: Add/view comments
+* TipService: CRUD tips
+
+### GraphQL
+
+* Frontend interacts via GraphQL
+* Resolvers call gRPC methods
+
+---
+
+## 🏢 Database Schema (PostgreSQL)
+
+**Users**
+
+* id (UUID)
+* name
+* email
+* avatar
+
+**Posts**
+
+* id (UUID)
+* title
+* description (Markdown)
+* category
+* image\_url
+* created\_by (UserID FK)
+* resolved (bool)
+* created\_at
+
+**Comments**
+
+* id (UUID)
+* post\_id (FK)
+* user\_id (FK)
+* content (Markdown)
+* created\_at
+
+**Tips**
+
+* id (UUID)
+* content (Markdown)
+* posted\_by (UserID FK)
+* created\_at
+
+---
+
+## 🚀 Hosting Plan
+
+* **Frontend**: Vercel (CI/CD from GitHub)
+* **Backend**: Railway (gRPC+GraphQL)
+* **Database**: PostgreSQL via Railway or Supabase
+* **Image Upload**: Supabase Storage (free tier)
+* **Auth**: Google OAuth via Firebase (email domain restriction)
+
+---
+
+## 🔢 Dev Tools
+
+* Docker
+* Postman / Insomnia
+* GitHub Actions (CI/CD)
+* Git for source control
+
+---
+
+## ⏰ Development Timeline (6 Weeks)
+
+| Week | Tasks                                    |
+| ---- | ---------------------------------------- |
+| 1    | Auth + DB schema + GraphQL scaffold      |
+| 2    | gRPC services + Post doubt module        |
+| 3    | Comment system + Screenshot upload       |
+| 4    | Tips section + Search & filter           |
+| 5    | Frontend polish + error handling + CI/CD |
+| 6    | Testing + final deployment               |
+
+---
+
+## 💸 Cost Summary: **0 Rs**
+
+| Service         | Provider         | Cost |
+| --------------- | ---------------- | ---- |
+| Hosting (FE/BE) | Vercel + Railway | 0 Rs |
+| DB + Storage    | Supabase         | 0 Rs |
+| Auth            | Firebase         | 0 Rs |
+| CI/CD           | GitHub Actions   | 0 Rs |
+
+---
+
+Let me know when you're ready to start scaffolding the codebase, proto files, or GraphQL schema!
