@@ -81,7 +81,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPosts(filters?: { category?: string; resolved?: boolean; search?: string }): Promise<PostWithAuthor[]> {
-    let query = db
+    let conditions = [];
+    
+    // Apply filters
+    if (filters?.category) {
+      conditions.push(eq(posts.category, filters.category));
+    }
+    if (filters?.resolved !== undefined) {
+      conditions.push(eq(posts.resolved, filters.resolved));
+    }
+    if (filters?.search) {
+      conditions.push(
+        or(
+          ilike(posts.title, `%${filters.search}%`),
+          ilike(posts.description, `%${filters.search}%`)
+        )
+      );
+    }
+
+    const baseQuery = db
       .select({
         id: posts.id,
         title: posts.title,
@@ -108,23 +126,12 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(comments, eq(posts.id, comments.postId))
       .groupBy(posts.id, users.id);
 
-    // Apply filters
-    if (filters?.category) {
-      query = query.where(eq(posts.category, filters.category));
+    let finalQuery = baseQuery;
+    if (conditions.length > 0) {
+      finalQuery = finalQuery.where(and(...conditions));
     }
-    if (filters?.resolved !== undefined) {
-      query = query.where(eq(posts.resolved, filters.resolved));
-    }
-    if (filters?.search) {
-      query = query.where(
-        or(
-          ilike(posts.title, `%${filters.search}%`),
-          ilike(posts.description, `%${filters.search}%`)
-        )
-      );
-    }
-
-    const result = await query.orderBy(desc(posts.createdAt));
+    const result = await finalQuery.orderBy(desc(posts.createdAt));
+    
     return result as PostWithAuthor[];
   }
 
